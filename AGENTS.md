@@ -47,5 +47,15 @@ The visual aesthetics must strictly align with the specifications defined in [DE
 - **Integrations**: GitHub OAuth, Custom RPC.
 - **Storage**: Real-time database for chat/logs.
 
+## Agent Git Workflow Rules
+All AI developer agents operating on this repository must strictly adhere to the following git workflow rules:
+1. **No Direct Commits to Main**: Do not commit or push changes directly to the `main` branch.
+2. **Feature Branching**: Always create a new descriptive branch (e.g. `feat/feature-name`, `fix/bug-name`, `docs/doc-name`) off of the latest `main` branch for any work.
+3. **Pull Request Flow**:
+   * Commit all code changes onto the feature branch.
+   * Push the branch to the remote repository.
+   * Suggest or instruct the user to open a Pull Request (PR) to merge the feature branch into `main`.
+   * Never merge the branch into `main` directly.
+
 ---
 *Source: Google Stitch*

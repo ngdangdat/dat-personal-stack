@@ -13,10 +13,8 @@ type HealthResponse struct {
 	Status string `json:"status"`
 }
 
-func main() {
-	githubService := services.NewGitHubService()
-
-	// Simple HTTP mux
+// SetupRouter configures all HTTP routes on a ServeMux
+func SetupRouter(githubService *services.GitHubService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// CORS Middleware Helper
@@ -25,7 +23,7 @@ func main() {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			
+
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(http.StatusOK)
 				return
@@ -92,6 +90,13 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(data)
 	}))
+
+	return mux
+}
+
+func main() {
+	githubService := services.NewGitHubService()
+	mux := SetupRouter(githubService)
 
 	log.Println("Starting backend server on :8080...")
 	if err := http.ListenAndServe(":8080", mux); err != nil {

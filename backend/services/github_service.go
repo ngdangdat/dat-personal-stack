@@ -285,7 +285,7 @@ func (s *GitHubService) enrichPRDetails(token string, repo string, prNum int, pr
 	var commits []GHCommit
 	if err := s.makeRequest(token, commitsUrl, &commits); err == nil && len(commits) > 0 {
 		firstCommitTime := commits[0].Commit.Author.Date
-		
+
 		// If merged, calculate lead time from first commit to merge time
 		if pr.State == "merged" && pr.MergedAt != nil {
 			lt := pr.MergedAt.Sub(firstCommitTime).Hours()
