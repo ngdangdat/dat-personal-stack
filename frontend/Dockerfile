@@ -1,5 +1,5 @@
 # Step 1: Build the Vue application
-FROM node:20-alpine AS builder
+FROM node:20.18.0-alpine3.20 AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY src/ ./src/
 RUN npm run build
 
 # Step 2: Serve using Nginx
-FROM nginx:alpine
+FROM nginx:1.27.2-alpine3.20
 
 # Copy custom configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
