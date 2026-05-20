@@ -8,10 +8,7 @@ import (
 )
 
 func TestHealthCheck(t *testing.T) {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"status":"ok"}`))
-	})
+	router := SetupRouter(nil)
 
 	req, err := http.NewRequest("GET", "/api/health", nil)
 	if err != nil {
@@ -19,7 +16,7 @@ func TestHealthCheck(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
