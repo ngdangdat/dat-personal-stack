@@ -1,0 +1,139 @@
+/* Global Forms & Input Elements */
+input, select, textarea {
+  background-color: var(--color-surface-terminal);
+  border: 1px solid var(--color-outline);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  border-radius: var(--roundness-border);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primary);
+}
+
+label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Button UI System */
+.btn {
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--roundness-border);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.1s ease;
+  user-select: none;
+}
+
+.btn:hover {
+  background-color: var(--color-primary-bg);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-active);
+  color: var(--color-surface);
+}
+
+.btn-dimmed {
+  border-color: var(--color-outline);
+  color: var(--color-text-secondary);
+}
+
+.btn-dimmed:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+}
+
+/* Navigation tabs layout (for nested views inside views) */
+.tab-container {
+  display: flex;
+  border-bottom: 1px solid var(--color-outline);
+  margin-bottom: 16px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: var(--color-text-primary);
+}
+
+.tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Status Badge utility */
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.badge-approved {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: var(--color-approved);
+  border: 1px solid var(--color-approved);
+}
+
+.badge-changes {
+  background-color: rgba(234, 179, 8, 0.1);
+  color: var(--color-changes-req);
+  border: 1px solid var(--color-changes-req);
+}
+
+.badge-draft {
+  background-color: rgba(100, 116, 139, 0.1);
+  color: var(--color-draft);
+  border: 1px solid var(--color-draft);
+}
+
+.badge-reviewing {
+  background-color: rgba(34, 211, 238, 0.1);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}

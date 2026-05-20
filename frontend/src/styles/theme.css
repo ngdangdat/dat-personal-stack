@@ -1,0 +1,32 @@
+:root {
+  /* Color Palette tokens */
+  --color-surface: #051424;           /* Deep navy slate */
+  --color-surface-container: #0b1a2b; /* Inner container slate */
+  --color-surface-header: #10263f;    /* Dense panel header slate */
+  --color-surface-terminal: #020912;  /* Monospace terminal console black */
+  
+  --color-primary: #22d3ee;           /* Cyan interactivity / status */
+  --color-primary-active: #06b6d4;    /* Pressed/hover cyan state */
+  --color-primary-bg: rgba(34, 211, 238, 0.08); /* 8% opacity cyan */
+  
+  --color-outline: #1e3656;           /* Sharp border lines */
+  --color-outline-dimmed: #10223a;    /* Muted structural border lines */
+  
+  --color-text-primary: #e2e8f0;      /* Main text */
+  --color-text-secondary: #94a3b8;    /* Muted label / helper text */
+  --color-text-dimmed: #64748b;       /* Disabled or placeholder state */
+  
+  /* Status Colors */
+  --color-approved: #22c55e;          /* Approved status (Green) */
+  --color-changes-req: #eab308;       /* Changes Requested status (Yellow) */
+  --color-draft: #64748b;             /* Draft / Muted status (Gray) */
+  --color-error: #ef4444;             /* Critical issues (Red) */
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* Spacing & Borders */
+  --roundness-border: 4px;            /* Strict ROUND_FOUR rounding */
+  --grid-gap: 12px;
+}
