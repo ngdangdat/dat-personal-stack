@@ -40,6 +40,28 @@
               class="form-input" 
             />
           </div>
+          <div class="form-group-row">
+            <div class="form-group">
+              <label for="node-build-cmd">BUILD_COMMAND:</label>
+              <input 
+                id="node-build-cmd" 
+                v-model="newNode.build_cmd" 
+                type="text" 
+                placeholder="e.g. npm run build" 
+                class="form-input" 
+              />
+            </div>
+            <div class="form-group">
+              <label for="node-deploy-cmd">DEPLOY_COMMAND:</label>
+              <input 
+                id="node-deploy-cmd" 
+                v-model="newNode.deploy_cmd" 
+                type="text" 
+                placeholder="e.g. npm run preview" 
+                class="form-input" 
+              />
+            </div>
+          </div>
           <button type="submit" class="btn btn-primary">ADD_NODE</button>
         </form>
       </div>
@@ -102,8 +124,28 @@
       </div>
     </div>
 
+    <!-- Connected Node Tabs -->
+    <div v-if="activeNode && getNodeStatus(activeNode.id) === 'connected'" class="panel tabs-panel">
+      <div class="panel-body monospaced no-pad-y">
+        <div class="sub-tabs">
+          <button 
+            :class="['sub-tab-btn', { active: activeSubTab === 'telemetry' }]" 
+            @click="activeSubTab = 'telemetry'"
+          >
+            [ TELEMETRY_INFO ]
+          </button>
+          <button 
+            :class="['sub-tab-btn', { active: activeSubTab === 'project_terminal' }]" 
+            @click="activeSubTab = 'project_terminal'"
+          >
+            [ PROJECT_TERMINAL ]
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Telemetry Panel -->
-    <div v-if="activeNode && telemetry" class="panel telemetry-panel">
+    <div v-if="activeNode && telemetry && activeSubTab === 'telemetry'" class="panel telemetry-panel">
       <div class="panel-header">
         <span class="panel-title">// TELEMETRY: {{ activeNode.name.toUpperCase() }}</span>
         <span class="status-indicator online">MONITORING</span>
@@ -158,7 +200,7 @@
     </div>
 
     <!-- Terminal log panel -->
-    <div v-if="activeNode && getNodeStatus(activeNode.id) === 'connected'" class="panel terminal-panel">
+    <div v-if="activeNode && getNodeStatus(activeNode.id) === 'connected' && activeSubTab === 'telemetry'" class="panel terminal-panel">
       <div class="panel-header">
         <span class="panel-title">// TERMINAL_CONSOLE: {{ activeNode.name.toUpperCase() }}</span>
         <button @click="clearConsole" class="btn btn-dimmed btn-sm">CLEAR</button>
@@ -187,27 +229,54 @@
         </form>
       </div>
     </div>
+
+    <!-- Project Terminal Panel (Phase 3) -->
+    <div v-if="activeNode && getNodeStatus(activeNode.id) === 'connected' && activeSubTab === 'project_terminal'">
+      <ProjectTerminal 
+        :gitStatus="gitStatus"
+        :consoleLines="consoleLines"
+        :actionRunning="commandRunning"
+        :buildStatus="buildStatus"
+        :deployStatus="deployStatus"
+        @action="handleProjectAction"
+        @clear-console="clearConsole"
+        @run-custom="runCustomProjectCommand"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { db } from '../services/db';
+import ProjectTerminal from './ProjectTerminal.vue';
 
 export default {
   name: 'WorkspaceManager',
+  components: {
+    ProjectTerminal
+  },
   setup() {
     const nodes = ref([]);
     const newNode = reactive({
       name: '',
       address: '',
-      token: 'agent-secret-token'
+      token: 'agent-secret-token',
+      build_cmd: 'npm run build',
+      deploy_cmd: 'npm run preview'
     });
 
     const activeNode = ref(null);
     const telemetry = ref(null);
     const connectionStates = reactive({}); // node.id -> 'disconnected' | 'connecting' | 'connected'
     
+    // Sub-tab state
+    const activeSubTab = ref('telemetry'); // 'telemetry' | 'project_terminal'
+    const gitStatus = ref(null);
+    const buildStatus = ref('unknown');
+    const deployStatus = ref('unknown');
+    const runningActionType = ref(null);
+
     // Command runner states
     const currentCommand = ref('');
     const commandRunning = ref(false);
@@ -219,6 +288,20 @@ export default {
     let activeSocket = null;
     let commandIdCounter = 1;
     let pendingCommandId = null;
+
+    const fetchGitStatus = () => {
+      if (!activeSocket) return;
+      const payload = {
+        jsonrpc: '2.0',
+        method: 'workspace.get_git_status',
+        id: 'git_status'
+      };
+      try {
+        activeSocket.send(JSON.stringify(payload));
+      } catch (err) {
+        console.error('Failed to fetch git status:', err);
+      }
+    };
 
     // Load nodes from DB
     const loadNodes = async () => {
@@ -235,7 +318,9 @@ export default {
         id,
         name: newNode.name,
         address: newNode.address,
-        token: newNode.token
+        token: newNode.token,
+        build_cmd: newNode.build_cmd || 'npm run build',
+        deploy_cmd: newNode.deploy_cmd || 'npm run preview'
       };
 
       try {
@@ -243,6 +328,8 @@ export default {
         newNode.name = '';
         newNode.address = '';
         newNode.token = 'agent-secret-token';
+        newNode.build_cmd = 'npm run build';
+        newNode.deploy_cmd = 'npm run preview';
         await loadNodes();
       } catch (err) {
         console.error('Failed to save node:', err);
@@ -292,6 +379,7 @@ export default {
           if (ws !== activeSocket) return;
           connectionStates[node.id] = 'connected';
           appendSystemLog(`Successfully connected to ${node.name}. Streaming live telemetry...`);
+          fetchGitStatus();
         };
 
         ws.onmessage = (event) => {
@@ -310,16 +398,35 @@ export default {
               }
             } 
             
+            // Check for git status responses
+            if (data.id === 'git_status') {
+              if (data.result) {
+                gitStatus.value = data.result;
+              }
+              return;
+            }
+
             // Check for responses
             if (data.id !== undefined && data.id === pendingCommandId) {
               if (data.error) {
                 appendConsoleLine('stderr', `RPC Error: ${data.error.message}\n`);
+                if (runningActionType.value === 'build') buildStatus.value = 'failed';
+                if (runningActionType.value === 'deploy') deployStatus.value = 'failed';
               } else if (data.result) {
                 const exitCode = data.result.exit_code;
                 appendSystemLog(`Process finished with exit code ${exitCode}`);
+                
+                if (runningActionType.value === 'build') {
+                  buildStatus.value = exitCode === 0 ? 'success' : 'failed';
+                } else if (runningActionType.value === 'deploy') {
+                  deployStatus.value = exitCode === 0 ? 'success' : 'failed';
+                } else if (runningActionType.value === 'pull') {
+                  fetchGitStatus();
+                }
               }
               commandRunning.value = false;
               pendingCommandId = null;
+              runningActionType.value = null;
             }
           } catch (e) {
             console.error('Failed to parse WebSocket message:', e);
@@ -334,6 +441,10 @@ export default {
             activeNode.value = null;
             telemetry.value = null;
             commandRunning.value = false;
+            gitStatus.value = null;
+            buildStatus.value = 'unknown';
+            deployStatus.value = 'unknown';
+            runningActionType.value = null;
           }
         };
 
@@ -358,6 +469,10 @@ export default {
         connectionStates[activeNode.value.id] = 'disconnected';
         activeNode.value = null;
         telemetry.value = null;
+        gitStatus.value = null;
+        buildStatus.value = 'unknown';
+        deployStatus.value = 'unknown';
+        runningActionType.value = null;
       }
     };
 
@@ -440,6 +555,71 @@ export default {
       return `${h}h ${m}m ${s}s`;
     };
 
+    const handleProjectAction = (action) => {
+      if (!activeSocket || commandRunning.value) return;
+
+      let cmd = '';
+      if (action === 'pull') {
+        const branch = gitStatus.value?.branch;
+        if (!branch || branch === 'unknown') {
+          appendConsoleLine('stderr', 'Error: Active branch is unknown or cannot be determined. Pull aborted.\n');
+          return;
+        }
+        cmd = `git pull origin ${branch}`;
+        runningActionType.value = 'pull';
+      } else if (action === 'build') {
+        cmd = activeNode.value?.build_cmd || 'npm run build';
+        buildStatus.value = 'building';
+        runningActionType.value = 'build';
+      } else if (action === 'deploy') {
+        cmd = activeNode.value?.deploy_cmd || 'npm run preview';
+        deployStatus.value = 'deploying';
+        runningActionType.value = 'deploy';
+      }
+
+      executeProjectCommand(cmd);
+    };
+
+    const runCustomProjectCommand = (cmd) => {
+      runningActionType.value = 'custom';
+      executeProjectCommand(cmd);
+    };
+
+    const executeProjectCommand = (cmd) => {
+      const cmdId = commandIdCounter++;
+      pendingCommandId = cmdId;
+      commandRunning.value = true;
+
+      // Add to console log
+      consoleLines.value.push({ type: 'input', text: cmd });
+      if (consoleLines.value.length > 1000) {
+        consoleLines.value.shift();
+      }
+      scrollConsole();
+
+      const payload = {
+        jsonrpc: '2.0',
+        method: 'workspace.run_command',
+        params: {
+          workspace_id: 'local',
+          command: cmd
+        },
+        id: cmdId
+      };
+
+      try {
+        activeSocket.send(JSON.stringify(payload));
+      } catch (err) {
+        console.error('Failed to send project command:', err);
+        appendConsoleLine('stderr', `Failed to send command: ${err.message}\n`);
+        commandRunning.value = false;
+        pendingCommandId = null;
+        runningActionType.value = null;
+        if (buildStatus.value === 'building') buildStatus.value = 'failed';
+        if (deployStatus.value === 'deploying') deployStatus.value = 'failed';
+      }
+    };
+
     onMounted(() => {
       loadNodes();
     });
@@ -466,7 +646,13 @@ export default {
       runCommand,
       clearConsole,
       formatBytes,
-      formatUptime
+      formatUptime,
+      activeSubTab,
+      gitStatus,
+      buildStatus,
+      deployStatus,
+      handleProjectAction,
+      runCustomProjectCommand
     };
   }
 };
@@ -784,5 +970,49 @@ export default {
 
 .text-center {
   text-align: center;
+}
+
+/* Connected Node Tabs */
+.tabs-panel {
+  margin-bottom: 12px;
+}
+
+.sub-tabs {
+  display: flex;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.sub-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s ease;
+  outline: none;
+}
+
+.sub-tab-btn.active {
+  color: var(--color-primary);
+}
+
+.sub-tab-btn:hover:not(.active) {
+  color: var(--color-text-primary);
+}
+
+.form-group-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .form-group-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

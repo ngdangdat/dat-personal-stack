@@ -203,9 +203,88 @@ func handleRequest(ctx context.Context, conn *SafeConn, req JSONRPCRequest) {
 		}
 		go executeCommand(ctx, conn, params, req.ID)
 
+	case "workspace.get_git_status":
+		status := getGitStatus()
+		conn.WriteJSONSafe(JSONRPCResponse{
+			JSONRPC: "2.0",
+			Result:  status,
+			ID:      req.ID,
+		})
+
 	default:
 		sendError(conn, -32601, fmt.Sprintf("Method not found: '%s'", req.Method), nil, req.ID)
 	}
+}
+
+type CommitInfo struct {
+	Hash    string `json:"hash"`
+	Author  string `json:"author"`
+	Date    string `json:"date"`
+	Message string `json:"message"`
+}
+
+type GitStatusResponse struct {
+	Branch      string       `json:"branch"`
+	IsClean     bool         `json:"is_clean"`
+	Commits     []CommitInfo `json:"commits"`
+	StatusLines []string     `json:"status_lines"`
+}
+
+func getGitStatus() GitStatusResponse {
+	var resp GitStatusResponse
+	resp.IsClean = true
+	resp.Commits = []CommitInfo{}
+	resp.StatusLines = []string{}
+
+	// 1. Get current branch
+	branchCmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	branchOut, err := branchCmd.Output()
+	if err == nil {
+		resp.Branch = strings.TrimSpace(string(branchOut))
+	} else {
+		resp.Branch = "unknown"
+		return resp // return early if not a git repository
+	}
+
+	// 2. Get last 5 commits
+	commitsCmd := exec.Command("git", "log", "-5", "--pretty=format:%h|%an|%cr|%s")
+	commitsOut, err := commitsCmd.Output()
+	if err == nil {
+		lines := strings.Split(string(commitsOut), "\n")
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			parts := strings.SplitN(line, "|", 4)
+			if len(parts) == 4 {
+				resp.Commits = append(resp.Commits, CommitInfo{
+					Hash:    parts[0],
+					Author:  parts[1],
+					Date:    parts[2],
+					Message: parts[3],
+				})
+			}
+		}
+	}
+
+	// 3. Get status --porcelain
+	statusCmd := exec.Command("git", "status", "--porcelain")
+	statusOut, err := statusCmd.Output()
+	if err == nil {
+		statusStr := strings.TrimSpace(string(statusOut))
+		if statusStr != "" {
+			resp.IsClean = false
+			lines := strings.Split(statusStr, "\n")
+			for _, line := range lines {
+				if strings.TrimSpace(line) != "" {
+					resp.StatusLines = append(resp.StatusLines, line)
+				}
+			}
+		}
+	}
+
+	return resp
 }
 
 func getTotalMemory() uint64 {
