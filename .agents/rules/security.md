@@ -15,3 +15,5 @@
   * Push the branch to the remote repository.
   * Suggest or instruct the user to open a Pull Request (PR) to merge the feature branch into `main`.
   * Never merge the branch into `main` directly.
+  * **Resolving Review Comments**: After pushing commits that address PR review comments, leave a summary comment on the Pull Request using the GitHub CLI:
+    `gh pr review <pr_number> --comment --body "Resolved feedback: <summary of fixes>"`
