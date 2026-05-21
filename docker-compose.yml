@@ -19,8 +19,8 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - PORT=8081
-      - AGENT_SECRET_TOKEN=agent-secret-token
+      - PORT=${PORT:-8081}
+      - AGENT_SECRET_TOKEN=${AGENT_SECRET_TOKEN:-agent-secret-token}
     restart: unless-stopped
     networks:
       - app-network
