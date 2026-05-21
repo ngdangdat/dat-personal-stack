@@ -69,19 +69,47 @@ export default {
       currentTab.value = tab;
     };
 
-    // Load configuration from IndexedDB on mount
+    // Load configuration on mount (sync backend PostgreSQL & fallback to IndexedDB)
     onMounted(async () => {
+      let loadedFromBackend = false;
       try {
-        const config = await db.getConfig();
-        if (config) {
-          state.token = config.token || '';
-          state.username = config.username || '';
-          if (state.token && state.username) {
+        const response = await fetch('/api/settings');
+        if (response.ok) {
+          const config = await response.json();
+          if (config && config.username && config.token) {
+            state.token = config.token;
+            state.username = config.username;
+            loadedFromBackend = true;
             checkConnection();
           }
         }
       } catch (err) {
-        console.error("Failed to load config from db:", err);
+        console.error("Failed to load config from backend settings:", err);
+      }
+
+      if (!loadedFromBackend) {
+        try {
+          const config = await db.getConfig();
+          if (config) {
+            state.token = config.token || '';
+            state.username = config.username || '';
+            if (state.token && state.username) {
+              // Sync local IndexedDB config to PostgreSQL database
+              try {
+                await fetch('/api/settings/save', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ username: state.username, token: state.token })
+                });
+              } catch (e) {
+                console.error("Auto-sync of local config to backend failed:", e);
+              }
+              checkConnection();
+            }
+          }
+        } catch (err) {
+          console.error("Failed to load config from db:", err);
+        }
       }
     });
 
@@ -113,7 +141,23 @@ export default {
     const saveSettings = async ({ token, username }) => {
       state.token = token;
       state.username = username;
+      
+      // Save locally to IndexedDB first
       await db.saveConfig({ token, username });
+      
+      // Sync to PostgreSQL backend
+      try {
+        await fetch('/api/settings/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token, username })
+        });
+      } catch (err) {
+        console.error("Failed to save credentials to backend PostgreSQL:", err);
+      }
+
       await checkConnection();
     };
 

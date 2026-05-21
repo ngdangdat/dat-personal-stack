@@ -37,3 +37,7 @@ backend/*.dylib
 backend/*.test
 backend/*.out
 backend/backend
+
+# Antigravity CLI
+.antigravitycli/
+
