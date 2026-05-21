@@ -1,14 +1,16 @@
 {
   "permissions": {
     "deny": [
-      "Read(.env)",
-      "Write(.env)",
-      "Read(frontend/.env.local)",
-      "Write(frontend/.env.local)",
       "Read(**/.env)",
       "Write(**/.env)",
-      "Read(**/.env.*)",
-      "Write(**/.env.*)"
+      "Read(**/.env.local)",
+      "Write(**/.env.local)",
+      "Read(**/.env.*.local)",
+      "Write(**/.env.*.local)",
+      "Read(**/.env.development)",
+      "Write(**/.env.development)",
+      "Read(**/.env.production)",
+      "Write(**/.env.production)"
     ]
   }
 }

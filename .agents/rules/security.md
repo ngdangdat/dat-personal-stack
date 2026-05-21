@@ -1,7 +1,7 @@
 # Security and Development Rules
 
 ## 1. Access Restrictions (Sensitive Files)
-* **DO NOT** attempt to read, write, modify, or list `.env` files or any other files containing API keys, tokens, or credentials (e.g., `.env`, `.env.local`, `.env.*`).
+* **DO NOT** attempt to read, write, modify, or list actual `.env` files or any other files containing active API keys, tokens, or credentials (e.g., `.env`, `.env.local`, `.env.production`). Note that `.env.example` is **NOT** blocked and must be updated to track configuration schemas.
 * If any configuration change requires adding or editing a secret, **ask the user to do it manually**. Do not attempt to bypass this via shell commands (e.g., `cat`, `echo`, `cp`).
 
 ## 2. Environment Variable Configuration
