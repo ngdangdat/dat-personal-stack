@@ -280,12 +280,12 @@ export default {
       if (!wsUrl.includes('/rpc')) {
         wsUrl = wsUrl.replace(/\/$/, '') + '/rpc';
       }
-      wsUrl += `?token=${encodeURIComponent(node.token)}`;
 
       appendSystemLog(`Connecting to ${node.name} (${node.address})...`);
 
       try {
-        const ws = new WebSocket(wsUrl);
+        // Securely pass token via WebSocket subprotocol rather than URL parameters
+        const ws = new WebSocket(wsUrl, node.token);
         activeSocket = ws;
 
         ws.onopen = () => {
@@ -397,11 +397,17 @@ export default {
     const appendConsoleLine = (type, text) => {
       // Chunk-based streams might not end with newline, clean up representation
       consoleLines.value.push({ type, text });
+      if (consoleLines.value.length > 1000) {
+        consoleLines.value.shift();
+      }
       scrollConsole();
     };
 
     const appendSystemLog = (text) => {
       consoleLines.value.push({ type: 'system', text: `> ${text}` });
+      if (consoleLines.value.length > 1000) {
+        consoleLines.value.shift();
+      }
       scrollConsole();
     };
 

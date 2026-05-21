@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -68,8 +70,13 @@ var (
 	startTime = time.Now()
 	upgrader  = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
-			// Allow all origins for simplicity in local development
-			return true
+			// Validate WebSocket origin against frontend client domain.
+			// Allow empty origin to support command line / backend test connections.
+			origin := r.Header.Get("Origin")
+			if origin == "" {
+				return true
+			}
+			return origin == "http://localhost:3000"
 		},
 	}
 )
@@ -97,15 +104,39 @@ func main() {
 	})
 
 	http.HandleFunc("/rpc", func(w http.ResponseWriter, r *http.Request) {
-		// Handshake token validation
+		// Handshake token validation (accepts token via header or query params)
 		token := r.URL.Query().Get("token")
-		if token != config.SecretToken {
+		subprotocol := r.Header.Get("Sec-WebSocket-Protocol")
+
+		matchedToken := ""
+		if subprotocol != "" {
+			parts := strings.Split(subprotocol, ",")
+			for _, p := range parts {
+				p = strings.TrimSpace(p)
+				if p == config.SecretToken {
+					matchedToken = p
+					break
+				}
+			}
+		}
+
+		if matchedToken == "" && token == config.SecretToken {
+			matchedToken = token
+		}
+
+		if matchedToken == "" {
 			http.Error(w, "Unauthorized: Invalid secret token", http.StatusUnauthorized)
-			log.Printf("Rejected connection: Invalid token '%s'", token)
+			log.Printf("Rejected connection: Unauthorized")
 			return
 		}
 
-		conn, err := upgrader.Upgrade(w, r, nil)
+		var responseHeader http.Header
+		if subprotocol != "" && matchedToken != "" {
+			responseHeader = make(http.Header)
+			responseHeader.Set("Sec-WebSocket-Protocol", matchedToken)
+		}
+
+		conn, err := upgrader.Upgrade(w, r, responseHeader)
 		if err != nil {
 			log.Printf("Upgrade error: %v", err)
 			return
@@ -114,6 +145,10 @@ func main() {
 
 		safeConn := &SafeConn{Conn: conn}
 		log.Println("Client connected successfully via WebSocket")
+
+		// Create connection context: cancels running commands when connection closes
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 
 		// Start periodic telemetry sender (every 3 seconds)
 		stopTelemetry := make(chan struct{})
@@ -134,7 +169,7 @@ func main() {
 				continue
 			}
 
-			handleRequest(safeConn, req)
+			handleRequest(ctx, safeConn, req)
 		}
 		log.Println("Client disconnected")
 	})
@@ -145,7 +180,7 @@ func main() {
 	}
 }
 
-func handleRequest(conn *SafeConn, req JSONRPCRequest) {
+func handleRequest(ctx context.Context, conn *SafeConn, req JSONRPCRequest) {
 	if req.JSONRPC != "2.0" {
 		sendError(conn, -32600, "Invalid Request: expected jsonrpc version '2.0'", nil, req.ID)
 		return
@@ -166,11 +201,45 @@ func handleRequest(conn *SafeConn, req JSONRPCRequest) {
 			sendError(conn, -32602, "Invalid params", nil, req.ID)
 			return
 		}
-		go executeCommand(conn, params, req.ID)
+		go executeCommand(ctx, conn, params, req.ID)
 
 	default:
 		sendError(conn, -32601, fmt.Sprintf("Method not found: '%s'", req.Method), nil, req.ID)
 	}
+}
+
+func getTotalMemory() uint64 {
+	// Try parsing /proc/meminfo (Linux)
+	file, err := os.Open("/proc/meminfo")
+	if err == nil {
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.HasPrefix(line, "MemTotal:") {
+				var memTotal uint64
+				_, err := fmt.Sscanf(line, "MemTotal: %d kB", &memTotal)
+				if err == nil {
+					return memTotal * 1024 // convert kB to bytes
+				}
+			}
+		}
+	}
+
+	// Try running sysctl on macOS
+	if runtime.GOOS == "darwin" {
+		out, err := exec.Command("sysctl", "-n", "hw.memsize").Output()
+		if err == nil {
+			var memSize uint64
+			_, err := fmt.Sscanf(strings.TrimSpace(string(out)), "%d", &memSize)
+			if err == nil {
+				return memSize
+			}
+		}
+	}
+
+	// Fallback standard capacity (8GB)
+	return 8589934592
 }
 
 func getSystemTelemetry() map[string]interface{} {
@@ -181,11 +250,14 @@ func getSystemTelemetry() map[string]interface{} {
 	// Goroutine/Thread counts
 	threads := runtime.NumGoroutine()
 
-	// Memory telemetry (simulating 8GB system)
+	// Memory telemetry (detect capacity dynamically)
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	totalBytes := uint64(8589934592)
+	totalBytes := getTotalMemory()
 	usedBytes := uint64(2000000000) + m.Alloc
+	if usedBytes > totalBytes {
+		usedBytes = totalBytes / 2
+	}
 
 	return map[string]interface{}{
 		"cpu": map[string]interface{}{
@@ -224,7 +296,7 @@ func startTelemetryStream(conn *SafeConn, stop chan struct{}) {
 	}
 }
 
-func executeCommand(conn *SafeConn, params RunCommandParams, rpcID interface{}) {
+func executeCommand(ctx context.Context, conn *SafeConn, params RunCommandParams, rpcID interface{}) {
 	cmdStr := params.Command
 	if cmdStr == "" {
 		sendError(conn, -32602, "Missing command string", nil, rpcID)
@@ -233,8 +305,8 @@ func executeCommand(conn *SafeConn, params RunCommandParams, rpcID interface{}) 
 
 	log.Printf("Executing command: %s (Workspace: %s)", cmdStr, params.WorkspaceID)
 
-	// In container/local environments, run in a shell context
-	cmd := exec.Command("sh", "-c", cmdStr)
+	// Run command bound to connection context to kill it if WS closes
+	cmd := exec.CommandContext(ctx, "sh", "-c", cmdStr)
 
 	stdoutPipe, err := cmd.StdoutPipe()
 	if err != nil {

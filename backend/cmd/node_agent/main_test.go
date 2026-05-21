@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -85,7 +86,7 @@ func TestWebSocketRPCSystemTelemetry(t *testing.T) {
 			if err := json.Unmarshal(msg, &req); err != nil {
 				continue
 			}
-			handleRequest(safeConn, req)
+			handleRequest(context.Background(), safeConn, req)
 		}
 	})
 
