@@ -490,7 +490,7 @@ export default {
 
 /* Status Classes */
 .text-success {
-  color: #22c55e;
+  color: var(--color-success, #22c55e);
 }
 
 .text-error {
@@ -506,7 +506,7 @@ export default {
   color: var(--color-error);
 }
 :deep(.ansi-green) {
-  color: #22c55e;
+  color: var(--color-success, #22c55e);
 }
 :deep(.ansi-yellow) {
   color: var(--color-warning);

@@ -40,6 +40,28 @@
               class="form-input" 
             />
           </div>
+          <div class="form-group-row">
+            <div class="form-group">
+              <label for="node-build-cmd">BUILD_COMMAND:</label>
+              <input 
+                id="node-build-cmd" 
+                v-model="newNode.build_cmd" 
+                type="text" 
+                placeholder="e.g. npm run build" 
+                class="form-input" 
+              />
+            </div>
+            <div class="form-group">
+              <label for="node-deploy-cmd">DEPLOY_COMMAND:</label>
+              <input 
+                id="node-deploy-cmd" 
+                v-model="newNode.deploy_cmd" 
+                type="text" 
+                placeholder="e.g. npm run preview" 
+                class="form-input" 
+              />
+            </div>
+          </div>
           <button type="submit" class="btn btn-primary">ADD_NODE</button>
         </form>
       </div>
@@ -239,7 +261,9 @@ export default {
     const newNode = reactive({
       name: '',
       address: '',
-      token: 'agent-secret-token'
+      token: 'agent-secret-token',
+      build_cmd: 'npm run build',
+      deploy_cmd: 'npm run preview'
     });
 
     const activeNode = ref(null);
@@ -294,7 +318,9 @@ export default {
         id,
         name: newNode.name,
         address: newNode.address,
-        token: newNode.token
+        token: newNode.token,
+        build_cmd: newNode.build_cmd || 'npm run build',
+        deploy_cmd: newNode.deploy_cmd || 'npm run preview'
       };
 
       try {
@@ -302,6 +328,8 @@ export default {
         newNode.name = '';
         newNode.address = '';
         newNode.token = 'agent-secret-token';
+        newNode.build_cmd = 'npm run build';
+        newNode.deploy_cmd = 'npm run preview';
         await loadNodes();
       } catch (err) {
         console.error('Failed to save node:', err);
@@ -532,15 +560,19 @@ export default {
 
       let cmd = '';
       if (action === 'pull') {
-        const branch = (gitStatus.value && gitStatus.value.branch) || 'main';
+        const branch = gitStatus.value?.branch;
+        if (!branch || branch === 'unknown') {
+          appendConsoleLine('stderr', 'Error: Active branch is unknown or cannot be determined. Pull aborted.\n');
+          return;
+        }
         cmd = `git pull origin ${branch}`;
         runningActionType.value = 'pull';
       } else if (action === 'build') {
-        cmd = 'npm run build';
+        cmd = activeNode.value?.build_cmd || 'npm run build';
         buildStatus.value = 'building';
         runningActionType.value = 'build';
       } else if (action === 'deploy') {
-        cmd = 'npm run preview';
+        cmd = activeNode.value?.deploy_cmd || 'npm run preview';
         deployStatus.value = 'deploying';
         runningActionType.value = 'deploy';
       }
@@ -970,5 +1002,17 @@ export default {
 
 .sub-tab-btn:hover:not(.active) {
   color: var(--color-text-primary);
+}
+
+.form-group-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .form-group-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
