@@ -11,7 +11,7 @@ Before starting, ensure you have the following installed:
 ---
 
 ## 1. Setup Environment Configuration (.env)
-Create your local configuration by copying [.env.example](file:///Users/ngdangdat/voc/dat-personal-stack/.env.example) in the project root:
+Create your local configuration by copying [.env.example](../.env.example) in the project root:
 ```bash
 cp .env.example .env
 ```
