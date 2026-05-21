@@ -50,11 +50,20 @@ The interface is built strictly around the **Terminal Precision Design System** 
 
 ### Prerequisites
 * Docker & Docker Compose
-* Go 1.23+ (for local backend testing)
-* Node.js v20+ (for local frontend testing)
+* Go 1.23+ (for local backend testing/running)
+* Node.js v20+ (for local frontend testing/running)
 
-### Quick Start with Docker Compose
-To build and start the entire workspace center stack (Frontend, Backend, and Custom node agent) locally:
+### Local Environment Setup
+
+#### 1. Setup Environment Configuration
+Before starting, create your local configuration by copying [.env.example](file:///Users/ngdangdat/voc/dat-personal-stack/.env.example):
+```bash
+cp .env.example .env
+```
+*(The default values in `.env` are suitable for local development).*
+
+#### 2. Running via Docker Compose (Recommended)
+Build and start the entire stack (Frontend, Backend, and Custom Node Agent) locally:
 ```bash
 docker compose up --build
 ```
@@ -62,15 +71,83 @@ docker compose up --build
 * **Main API Server**: [http://localhost:8080](http://localhost:8080)
 * **Telemetry & RPC Agent**: [ws://localhost:8081/rpc](ws://localhost:8081/rpc)
 
-### Running Automated Test Suites & Linters
+#### 3. Running Separately on Bare Metal (For live reloading / debugging)
+* **Frontend (Vite dev server)**:
+  ```bash
+  cd frontend
+  npm install
+  npm run dev
+  ```
+  *(Default server: [http://localhost:5173](http://localhost:5173))*
 
-#### Backend Tests:
+* **Backend Server**:
+  ```bash
+  cd backend
+  go run cmd/server/main.go
+  ```
+  *(Default server: [http://localhost:8080](http://localhost:8080))*
+
+* **Node Agent Daemon**:
+  ```bash
+  cd backend
+  PORT=8081 AGENT_SECRET_TOKEN=agent-secret-token go run cmd/node_agent/main.go
+  ```
+  *(Default WebSocket: `ws://localhost:8081/rpc`)*
+
+---
+
+## 🌐 Production Deployment
+
+For deployment in staging or production environments, follow these security and orchestration practices:
+
+### 1. Configure Production Secrets
+Create a secure `.env` file on your server. Do **NOT** use default values for secrets in production:
+```env
+PORT=8081
+AGENT_SECRET_TOKEN=generate-a-long-secure-random-token-here
+```
+
+### 2. Build Containerized Images
+Dockerfiles are structured with **multi-stage builds** to minimize size and secure production runs:
+* **Backend**: Compiles a minimal static binary inside `alpine` running under a non-root `appuser`.
+* **Frontend**: Compiles Vite assets, then serves them using Nginx.
+
+Deploy via Docker Compose in daemon mode:
+```bash
+docker compose -f docker-compose.yml up -d
+```
+
+### 3. Deploying the Node Agent on a Remote Host (e.g. Raspberry Pi)
+If the Node Agent runs on a separate target host to report remote metrics:
+1. Compile the binary for the target architecture:
+   ```bash
+   # Example: Build for linux/arm64 (Raspberry Pi 4/5)
+   cd backend
+   CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-w -s" -o node_agent cmd/node_agent/main.go
+   ```
+2. Copy the binary to the remote host.
+3. Start the daemon with environment secrets:
+   ```bash
+   PORT=8081 AGENT_SECRET_TOKEN=your-long-secure-secret-token ./node_agent
+   ```
+
+### 4. Reverse Proxy & SSL (HTTPS/WSS)
+It is highly recommended to place a reverse proxy (such as Nginx, Traefik, or Caddy) in front of the ports to handle SSL/TLS termination:
+* Route public web traffic to the frontend Nginx server (port `3000`).
+* Proxy `/api` to the backend server (port `8080`).
+* Proxy `/rpc` to the node agent WebSocket endpoint (port `8081`), ensuring WebSocket upgrade headers (`Upgrade` and `Connection`) are properly forwarded.
+
+---
+
+## 🧪 Testing & Linting
+
+### Backend Tests:
 ```bash
 cd backend
 go test ./...
 ```
 
-#### Frontend Tests & Lint:
+### Frontend Tests & Lint:
 ```bash
 cd frontend
 npm install
