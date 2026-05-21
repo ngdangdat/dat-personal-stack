@@ -9,19 +9,8 @@
         <PRDashboard :state="state" />
       </div>
 
-      <div v-else-if="currentTab === 'workspaces'" class="panel placeholder-panel">
-        <div class="panel-header">
-          <span class="panel-title">// WORKSPACE_MANAGER.sh</span>
-          <span class="status-indicator warning">PHASE_2</span>
-        </div>
-        <div class="panel-body monospaced">
-          <p class="accent-text">> Initializing remote connection manager...</p>
-          <p class="dimmed-text">Workspace orchestration modules (Raspberry Pi, Cloud Nodes, RPC connections, CPU/Memory telemetry) are scheduled for Phase 2 development.</p>
-          <div class="terminal-box">
-            <span class="prompt">$</span> ssh pi@node-01.local --port 8080<br>
-            <span class="prompt">Refusing connection:</span> Modules not compiled.
-          </div>
-        </div>
+      <div v-else-if="currentTab === 'workspaces'">
+        <WorkspaceManager />
       </div>
 
       <div v-else-if="currentTab === 'chat'" class="panel placeholder-panel">
@@ -55,6 +44,7 @@ import TopAppBar from './components/TopAppBar.vue';
 import BottomNavBar from './components/BottomNavBar.vue';
 import PRDashboard from './components/PRDashboard.vue';
 import Settings from './components/Settings.vue';
+import WorkspaceManager from './components/WorkspaceManager.vue';
 import { db } from './services/db';
 
 export default {
@@ -63,7 +53,8 @@ export default {
     TopAppBar,
     BottomNavBar,
     PRDashboard,
-    Settings
+    Settings,
+    WorkspaceManager
   },
   setup() {
     const currentTab = ref('prs');
