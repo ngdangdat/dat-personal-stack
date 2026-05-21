@@ -10,6 +10,21 @@ services:
     networks:
       - app-network
 
+  node-agent:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: engineering-assistant-node-agent
+    command: ["./node_agent"]
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - AGENT_SECRET_TOKEN=agent-secret-token
+    restart: unless-stopped
+    networks:
+      - app-network
+
   frontend:
     build:
       context: ./frontend
