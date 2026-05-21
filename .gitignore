@@ -1,6 +1,9 @@
 # Local Specs Symlink
 specs
 
+# Root Environment Variables
+.env
+
 # OS Files
 .DS_Store
 Thumbs.db

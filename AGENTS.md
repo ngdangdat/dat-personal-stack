@@ -56,6 +56,7 @@ All AI developer agents operating on this repository must strictly adhere to the
    * Push the branch to the remote repository.
    * Suggest or instruct the user to open a Pull Request (PR) to merge the feature branch into `main`.
    * Never merge the branch into `main` directly.
+4. **Environment Variable Configuration**: When updating or adding environment variables to any application, agents must document them in the root `.env.example` file with sensible placeholder values and a brief description.
 
 ---
 *Source: Google Stitch*
