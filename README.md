@@ -62,7 +62,18 @@ cp .env.example .env
 ```
 *(The default values in `.env` are suitable for local development).*
 
-#### 2. Running via Docker Compose (Recommended)
+#### 2. Configure GitHub API Access (Personal Access Token)
+For security and privacy, GitHub credentials are **not** stored in backend environment variables. Instead, they are configured per-user on the client-side:
+1. **Generate a GitHub PAT**:
+   * Go to GitHub: **Settings** > **Developer Settings** > **Personal Access Tokens** > **Tokens (classic)**.
+   * Click **Generate new token (classic)** and select the `repo` scope.
+2. **Save credentials in the App**:
+   * Open the Frontend Dashboard (e.g., `http://localhost:3000`).
+   * Click the **Settings** tab on the navigation bar.
+   * Input your GitHub **Username** and the generated **Personal Access Token (PAT)**, then click **SAVE**.
+   * *These are stored securely on your local device inside IndexedDB and automatically attached to backend API requests.*
+
+#### 3. Running via Docker Compose (Recommended)
 Build and start the entire stack (Frontend, Backend, and Custom Node Agent) locally:
 ```bash
 docker compose up --build
@@ -71,7 +82,7 @@ docker compose up --build
 * **Main API Server**: [http://localhost:8080](http://localhost:8080)
 * **Telemetry & RPC Agent**: [ws://localhost:8081/rpc](ws://localhost:8081/rpc)
 
-#### 3. Running Separately on Bare Metal (For live reloading / debugging)
+#### 4. Running Separately on Bare Metal (For live reloading / debugging)
 * **Frontend (Vite dev server)**:
   ```bash
   cd frontend
