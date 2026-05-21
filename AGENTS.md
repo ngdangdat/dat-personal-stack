@@ -33,7 +33,7 @@ A mobile-first engineering command center designed to bridge the gap between hig
 ---
 
 ## Design Language: Terminal Precision
-The visual aesthetics must strictly align with the specifications defined in [DESIGN.md](file:///Users/ngdangdat/voc/dat-personal-stack/DESIGN.md).
+The visual aesthetics must strictly align with the specifications defined in [DESIGN.md](./DESIGN.md).
 
 - **Theme**: Dark mode primary (`#051424`).
 - **Accent**: Cyan interactivity (`#22d3ee`).

@@ -29,7 +29,7 @@ A mobile-first, high-density dashboard and remote orchestrator built for modern 
 
 ## 🎨 Visual Identity: Terminal Precision
 
-The interface is built strictly around the **Terminal Precision Design System** defined in [DESIGN.md](file:///Users/ngdangdat/voc/dat-personal-stack/DESIGN.md):
+The interface is built strictly around the **Terminal Precision Design System** defined in [DESIGN.md](./DESIGN.md):
 
 * **Surface**: `#051424` (Deep navy slate)
 * **Primary Accent**: `#22d3ee` (High-visibility terminal Cyan)
@@ -40,37 +40,37 @@ The interface is built strictly around the **Terminal Precision Design System** 
 
 ## 📂 Repository Structure
 
-* [DESIGN.md](file:///Users/ngdangdat/voc/dat-personal-stack/DESIGN.md): Specifications for typography, colors, layout structures, and components.
-* [AGENTS.md](file:///Users/ngdangdat/voc/dat-personal-stack/AGENTS.md): The core application specification and developer agent guidelines.
-* [specs/README.md](file:///Users/ngdangdat/voc/dat-personal-stack/specs/README.md): Deep-dive technical specifications including database schemas, JSON-RPC structures, and API patterns.
+* [DESIGN.md](./DESIGN.md): Specifications for typography, colors, layout structures, and components.
+* [AGENTS.md](./AGENTS.md): The core application specification and developer agent guidelines.
+* [specs/README.md](./specs/README.md): Deep-dive technical specifications including database schemas, JSON-RPC structures, and API patterns.
 
 ---
 
 ## ⚙️ Local Development & Operations
 
-### Prerequisites
-* Docker & Docker Compose
-* Go 1.23+ (for local backend testing)
-* Node.js v20+ (for local frontend testing)
+To configure, build, and run the Engineering Assistant services locally, please refer to the dedicated guide:
 
-### Quick Start with Docker Compose
-To build and start the entire workspace center stack (Frontend, Backend, and Custom node agent) locally:
-```bash
-docker compose up --build
-```
-* **Frontend Dashboard**: [http://localhost:3000](http://localhost:3000)
-* **Main API Server**: [http://localhost:8080](http://localhost:8080)
-* **Telemetry & RPC Agent**: [ws://localhost:8081/rpc](ws://localhost:8081/rpc)
+* 📖 **[Local Setup & Run Instructions](./docs/local_setup.md)**: Details on configuring local `.env`, setting up client-side GitHub Personal Access Tokens (PAT), running the stack via Docker Compose, or spinning up Vite, the Go API server, and the node agent daemon separately for development.
 
-### Running Automated Test Suites & Linters
+---
 
-#### Backend Tests:
+## 🌐 Production Deployment
+
+For guidelines on packaging and deploying the Engineering Assistant center in live environments:
+
+* 📖 **[Production Deployment & Security Guide](./docs/production_deployment.md)**: Best practices for managing production secrets, building slim multi-stage Docker containers, compiling/running node agents for remote targets (e.g. Raspberry Pi), and setting up Nginx, Traefik, or Caddy for reverse proxying and SSL/TLS socket terminations.
+
+---
+
+## 🧪 Testing & Linting
+
+### Backend Tests:
 ```bash
 cd backend
 go test ./...
 ```
 
-#### Frontend Tests & Lint:
+### Frontend Tests & Lint:
 ```bash
 cd frontend
 npm install
