@@ -8,7 +8,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
-	"log"
 	"os"
 	"time"
 
@@ -42,8 +41,8 @@ func NewDBService(databaseURL string) (*DBService, error) {
 	// Load encryption key
 	keyStr := os.Getenv("ENCRYPTION_KEY")
 	if keyStr == "" {
-		keyStr = "default-32-byte-encryption-key!!"
-		log.Println("WARNING: ENCRYPTION_KEY environment variable is not set. Using default development key.")
+		db.Close()
+		return nil, errors.New("ENCRYPTION_KEY environment variable is not set")
 	}
 
 	encryptionKey := []byte(keyStr)
