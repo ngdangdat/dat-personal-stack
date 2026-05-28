@@ -8,7 +8,7 @@ import (
 )
 
 func TestHealthCheck(t *testing.T) {
-	router := SetupRouter(nil)
+	router := SetupRouter(nil, nil)
 
 	req, err := http.NewRequest("GET", "/api/health", nil)
 	if err != nil {
