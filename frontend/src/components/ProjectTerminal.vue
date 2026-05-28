@@ -283,7 +283,7 @@ export default {
 
 .grid-label {
   font-size: 0.65rem;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
 }
 
 .grid-value {
@@ -298,7 +298,7 @@ export default {
 }
 
 .status-indicator.dirty {
-  background-color: rgba(234, 179, 8, 0.1);
+  background-color: rgba(251, 191, 36, 0.1);
   color: var(--color-warning);
   border: 1px solid var(--color-warning);
 }
@@ -314,8 +314,8 @@ export default {
   display: grid;
   grid-template-columns: 80px 100px 100px 1fr;
   padding: 6px 0;
-  border-bottom: 1px solid var(--color-outline-dimmed);
-  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface-variant);
   font-weight: 700;
 }
 
@@ -323,7 +323,7 @@ export default {
   display: grid;
   grid-template-columns: 80px 100px 100px 1fr;
   padding: 8px 0;
-  border-bottom: 1px solid var(--color-outline-dimmed);
+  border-bottom: 1px solid var(--color-outline-variant);
   align-items: center;
 }
 
@@ -356,7 +356,7 @@ export default {
 .btn {
   background-color: var(--color-outline);
   border: 1px solid var(--color-outline);
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
   padding: 8px 16px;
   border-radius: var(--roundness-border);
   font-family: var(--font-mono);
@@ -389,7 +389,7 @@ export default {
 }
 
 .btn-warning-outline {
-  background-color: rgba(234, 179, 8, 0.05);
+  background-color: rgba(251, 191, 36, 0.05);
   border-color: var(--color-warning);
   color: var(--color-warning);
 }
@@ -401,13 +401,13 @@ export default {
 
 .btn-dimmed {
   background-color: transparent;
-  border-color: var(--color-outline-dimmed);
-  color: var(--color-text-secondary);
+  border-color: var(--color-outline-variant);
+  color: var(--color-on-surface-variant);
 }
 
 .btn-dimmed:hover {
   border-color: var(--color-outline);
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .btn-sm {
@@ -418,7 +418,7 @@ export default {
 /* Terminal Feed */
 .terminal-log-box {
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   padding: 12px;
   border-radius: var(--roundness-border);
   height: 200px;
@@ -436,7 +436,7 @@ export default {
 }
 
 .log-line.system {
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
 }
 
 .log-line.input {
@@ -444,7 +444,7 @@ export default {
 }
 
 .log-line.stdout {
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .log-line.stderr {
@@ -456,7 +456,7 @@ export default {
   align-items: center;
   gap: 8px;
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   padding: 6px 10px;
   border-radius: var(--roundness-border);
   margin-top: 8px;
@@ -473,7 +473,7 @@ export default {
   background: transparent;
   border: none;
   outline: none;
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
   font-family: var(--font-mono);
   font-size: 0.8rem;
 }
@@ -490,7 +490,7 @@ export default {
 
 /* Status Classes */
 .text-success {
-  color: var(--color-success, #22c55e);
+  color: var(--color-success);
 }
 
 .text-error {
@@ -506,7 +506,7 @@ export default {
   color: var(--color-error);
 }
 :deep(.ansi-green) {
-  color: var(--color-success, #22c55e);
+  color: var(--color-success);
 }
 :deep(.ansi-yellow) {
   color: var(--color-warning);
@@ -521,9 +521,9 @@ export default {
   color: var(--color-primary);
 }
 :deep(.ansi-white) {
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 :deep(.ansi-gray) {
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
 }
 </style>

@@ -28,8 +28,8 @@ export default {
 
 <style scoped>
 .top-app-bar {
-  background-color: #131313;
-  border-bottom: 1px solid var(--color-outline);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-outline-variant);
   height: 48px;
   width: 100%;
   display: flex;
@@ -72,8 +72,8 @@ export default {
 }
 
 .status-dot.connected {
-  background-color: var(--color-approved);
-  box-shadow: 0 0 6px var(--color-approved);
+  background-color: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
 }
 
 .status-dot.offline {
@@ -83,7 +83,7 @@ export default {
 .status-text {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   font-weight: 600;
 }
 </style>

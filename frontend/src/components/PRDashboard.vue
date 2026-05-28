@@ -248,7 +248,7 @@ export default {
 
 .metric-card {
   background-color: var(--color-surface-container);
-  border: 1px solid var(--color-outline);
+  border: 1px solid var(--color-outline-variant);
   border-radius: var(--roundness-border);
   padding: 10px;
   display: flex;
@@ -262,7 +262,7 @@ export default {
 .metric-label {
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   font-weight: 700;
   letter-spacing: 0.5px;
 }
@@ -291,11 +291,11 @@ export default {
 }
 
 .count-item.approved {
-  color: var(--color-approved);
+  color: var(--color-success);
 }
 
 .count-item.pending {
-  color: var(--color-changes-req);
+  color: var(--color-warning);
 }
 
 .metric-sub {
@@ -326,7 +326,7 @@ export default {
 
 .pr-card {
   background-color: var(--color-surface-container);
-  border: 1px solid var(--color-outline);
+  border: 1px solid var(--color-outline-variant);
   border-radius: var(--roundness-border);
   padding: 12px;
   display: flex;
@@ -351,12 +351,12 @@ export default {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 1px solid var(--color-outline);
+  border: 1px solid var(--color-outline-variant);
 }
 
 .pr-repo {
   font-size: 0.7rem;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   font-weight: 500;
 }
 
@@ -373,7 +373,7 @@ export default {
   font-size: 0.85rem;
   font-weight: 500;
   line-height: 1.3;
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .pr-card-footer {
@@ -391,7 +391,7 @@ export default {
 
 .metric-pill {
   background-color: rgba(34, 211, 238, 0.05);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   color: var(--color-primary);
   padding: 1px 6px;
   border-radius: 2px;
@@ -399,7 +399,7 @@ export default {
 
 .draft-pill {
   background-color: rgba(100, 116, 139, 0.1);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   color: var(--color-draft);
   padding: 1px 6px;
   border-radius: 2px;
