@@ -283,7 +283,7 @@ body {
 }
 
 .status-indicator.warning {
-  background-color: rgba(251, 191, 36, 0.1);
+  background-color: rgba(var(--color-warning-rgb), 0.1);
   color: var(--color-warning);
   border: 1px solid var(--color-warning);
 }
