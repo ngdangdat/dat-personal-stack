@@ -181,7 +181,7 @@ export default {
 
 body {
   background-color: var(--color-surface);
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
   font-family: var(--font-sans);
   overflow-x: hidden;
   height: 100vh;
@@ -208,15 +208,15 @@ body {
 /* Common panels and text utility classes */
 .panel {
   background-color: var(--color-surface-container);
-  border: 1px solid var(--color-outline);
+  border: 1px solid var(--color-outline-variant);
   border-radius: var(--roundness-border);
   margin-bottom: 16px;
   overflow: hidden;
 }
 
 .panel-header {
-  background-color: var(--color-surface-header);
-  border-bottom: 1px solid var(--color-outline);
+  background-color: var(--color-surface-container-high);
+  border-bottom: 1px solid var(--color-outline-variant);
   padding: 10px 14px;
   display: flex;
   justify-content: space-between;
@@ -243,13 +243,13 @@ body {
 
 .terminal-box {
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   padding: 10px;
   border-radius: var(--roundness-border);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   line-height: 1.5;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   margin-top: 14px;
 }
 
@@ -271,7 +271,7 @@ body {
 }
 
 .dimmed-text {
-  color: var(--color-text-secondary) !important;
+  color: var(--color-on-surface-variant) !important;
 }
 
 .status-indicator {
@@ -283,7 +283,7 @@ body {
 }
 
 .status-indicator.warning {
-  background-color: rgba(234, 179, 8, 0.1);
+  background-color: rgba(var(--color-warning-rgb), 0.1);
   color: var(--color-warning);
   border: 1px solid var(--color-warning);
 }

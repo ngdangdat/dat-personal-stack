@@ -687,8 +687,8 @@ export default {
 
 .form-input {
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline);
-  color: var(--color-text-primary);
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface);
   padding: 8px 10px;
   border-radius: var(--roundness-border);
   font-family: var(--font-mono);
@@ -704,7 +704,7 @@ export default {
 .btn {
   background-color: var(--color-outline);
   border: 1px solid var(--color-outline);
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
   padding: 8px 16px;
   border-radius: var(--roundness-border);
   font-family: var(--font-mono);
@@ -731,25 +731,25 @@ export default {
 }
 
 .btn-error {
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: rgba(248, 113, 113, 0.1);
   border-color: var(--color-error);
   color: var(--color-error);
 }
 
 .btn-error:hover {
   background-color: var(--color-error);
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .btn-dimmed {
   background-color: transparent;
-  border-color: var(--color-outline-dimmed);
-  color: var(--color-text-secondary);
+  border-color: var(--color-outline-variant);
+  color: var(--color-on-surface-variant);
 }
 
 .btn-dimmed:hover {
   border-color: var(--color-outline);
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .btn-sm {
@@ -766,7 +766,7 @@ export default {
 
 .node-item {
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   padding: 10px;
   border-radius: var(--roundness-border);
   display: grid;
@@ -789,7 +789,7 @@ export default {
 .node-label {
   font-weight: 700;
   font-size: 0.85rem;
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .node-addr {
@@ -812,9 +812,9 @@ export default {
 }
 
 .status-badge.connecting {
-  background-color: rgba(234, 179, 8, 0.1);
-  border-color: var(--color-changes-req);
-  color: var(--color-changes-req);
+  background-color: rgba(251, 191, 36, 0.1);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
 }
 
 .status-badge.connected {
@@ -837,7 +837,7 @@ export default {
 
 .telemetry-card {
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   border-radius: var(--roundness-border);
   padding: 12px;
   display: flex;
@@ -849,7 +849,7 @@ export default {
 
 .card-label {
   font-size: 0.65rem;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   font-weight: 700;
 }
 
@@ -860,7 +860,7 @@ export default {
 }
 
 .progress-bar-container {
-  background-color: var(--color-outline-dimmed);
+  background-color: var(--color-outline-variant);
   height: 6px;
   width: 100%;
   border-radius: 3px;
@@ -878,7 +878,7 @@ export default {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .metric-sub {
@@ -894,7 +894,7 @@ export default {
 /* Terminal Styles */
 .terminal-log-box {
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   padding: 12px;
   border-radius: var(--roundness-border);
   height: 180px;
@@ -912,7 +912,7 @@ export default {
 }
 
 .log-line.system {
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
 }
 
 .log-line.input {
@@ -920,7 +920,7 @@ export default {
 }
 
 .log-line.stdout {
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .log-line.stderr {
@@ -932,7 +932,7 @@ export default {
   align-items: center;
   gap: 8px;
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   padding: 6px 10px;
   border-radius: var(--roundness-border);
   margin-top: 8px;
@@ -949,7 +949,7 @@ export default {
   background: transparent;
   border: none;
   outline: none;
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
   font-family: var(--font-mono);
   font-size: 0.8rem;
 }
@@ -986,7 +986,7 @@ export default {
 .sub-tab-btn {
   background: transparent;
   border: none;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 700;
@@ -1001,7 +1001,7 @@ export default {
 }
 
 .sub-tab-btn:hover:not(.active) {
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .form-group-row {

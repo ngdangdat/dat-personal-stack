@@ -1,8 +1,8 @@
 /* Global Forms & Input Elements */
 input, select, textarea {
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline);
-  color: var(--color-text-primary);
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface);
   font-family: var(--font-mono);
   font-size: 0.85rem;
   padding: 8px 12px;
@@ -20,7 +20,7 @@ label {
   display: block;
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -65,20 +65,20 @@ label {
 }
 
 .btn-dimmed {
-  border-color: var(--color-outline);
-  color: var(--color-text-secondary);
+  border-color: var(--color-outline-variant);
+  color: var(--color-on-surface-variant);
 }
 
 .btn-dimmed:hover {
   background-color: rgba(255, 255, 255, 0.03);
-  color: var(--color-text-primary);
-  border-color: var(--color-text-secondary);
+  color: var(--color-on-surface);
+  border-color: var(--color-on-surface-variant);
 }
 
 /* Navigation tabs layout (for nested views inside views) */
 .tab-container {
   display: flex;
-  border-bottom: 1px solid var(--color-outline);
+  border-bottom: 1px solid var(--color-outline-variant);
   margin-bottom: 16px;
 }
 
@@ -86,7 +86,7 @@ label {
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   padding: 10px 14px;
@@ -95,7 +95,7 @@ label {
 }
 
 .tab-btn:hover {
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
 }
 
 .tab-btn.active {
@@ -115,15 +115,15 @@ label {
 }
 
 .badge-approved {
-  background-color: rgba(34, 197, 94, 0.1);
-  color: var(--color-approved);
-  border: 1px solid var(--color-approved);
+  background-color: rgba(var(--color-success-rgb), 0.1);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
 }
 
 .badge-changes {
-  background-color: rgba(234, 179, 8, 0.1);
-  color: var(--color-changes-req);
-  border: 1px solid var(--color-changes-req);
+  background-color: rgba(var(--color-warning-rgb), 0.1);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning);
 }
 
 .badge-draft {

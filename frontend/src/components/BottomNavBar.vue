@@ -75,8 +75,8 @@ export default {
 
 <style scoped>
 .bottom-nav-bar {
-  background-color: #131313;
-  border-top: 1px solid var(--color-outline);
+  background-color: var(--color-surface-container);
+  border-top: 1px solid var(--color-outline-variant);
   height: 56px;
   width: 100%;
   display: grid;
@@ -89,7 +89,7 @@ export default {
 .nav-item {
   background: transparent;
   border: none;
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,7 +106,7 @@ export default {
 }
 
 .nav-item.active {
-  background-color: rgba(30, 54, 86, 0.25); /* secondary-container background for active */
+  background-color: var(--color-secondary-container);
   color: var(--color-primary);
 }
 

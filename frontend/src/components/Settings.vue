@@ -132,8 +132,8 @@ export default {
   bottom: 1px;
   background: transparent;
   border: none;
-  border-left: 1px solid var(--color-outline-dimmed);
-  color: var(--color-text-secondary);
+  border-left: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface-variant);
   font-family: var(--font-mono);
   font-size: 0.65rem;
   font-weight: 700;
@@ -164,7 +164,7 @@ export default {
 
 .connection-status-box {
   background-color: var(--color-surface-terminal);
-  border: 1px solid var(--color-outline-dimmed);
+  border: 1px solid var(--color-outline-variant);
   padding: 10px 14px;
   border-radius: var(--roundness-border);
   margin-bottom: 20px;
@@ -178,11 +178,11 @@ export default {
 }
 
 .status-row .label {
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
 }
 
 .status-row .value.success {
-  color: var(--color-approved);
+  color: var(--color-success);
 }
 
 .status-row .value.error {
